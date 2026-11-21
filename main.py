@@ -31,7 +31,14 @@ def main() -> int:
     out_path = os.path.join(out_dir, "entry.txt")
     with open(out_path, "w", encoding="utf-8", newline="\n") as fh:
         fh.write(text)
-    print(f"wrote {out_path} ({chars} characters)")
+    # Read the file back and confirm what landed on disk is exactly
+    # the poem above, so a silent write failure can never pass quiet.
+    with open(out_path, "r", encoding="utf-8", newline="\n") as fh:
+        written = fh.read()
+    if written != text:
+        print("entry.txt on disk differs from the poem", file=sys.stderr)
+        return 1
+    print(f"wrote {out_path} ({chars} characters, verified)")
     return 0
 
 
